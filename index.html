@@ -134,18 +134,20 @@
     }
     .lang-btn.active{background:var(--gold);color:#08130F;}
 
-    /* ---------- Шапка с фото ---------- */
+    /* ---------- Шапка с фото ----------
+       320px, а не 240: широкая панорама в узкой полосе выглядела мелкой.
+       Само фото тоже перекадрировано плотнее — горы и виллы читаются. */
     .hero{
       position:relative;
       width:100%;
-      height:240px;
+      height:320px;
       overflow:hidden;
     }
     .hero-photo{
       width:100%;
       height:100%;
       object-fit:cover;
-      object-position:center 62%;
+      object-position:center center;
       display:block;
     }
     /* сверху притемняем — иначе светлое небо бьёт по глазам и «съедает» langbar */
@@ -453,7 +455,7 @@
     <header class="hero">
       <img class="hero-photo" src="assets/hero.jpg"
            alt="Бассейн и горы — Zarra Resort, Самарканд"
-           width="1200" height="750" />
+           width="1200" height="1000" />
       <div class="hero-fade"></div>
     </header>
 
@@ -479,7 +481,7 @@
     <nav class="links">
 
       <!-- 1. Онлайн-бронирование (webapp: шале → дата → тариф → заявка) -->
-      <a class="btn btn--primary anim" style="animation-delay:.34s"
+      <a class="btn btn--primary anim" style="animation-delay:.32s"
          href="https://zarra-webapp.netlify.app" target="_blank" rel="noopener">
         <span class="ic" aria-hidden="true">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
@@ -499,7 +501,7 @@
       </a>
 
       <!-- 2. Позвонить и забронировать -->
-      <a class="btn anim" style="animation-delay:.40s" href="tel:+998875913330">
+      <a class="btn anim" style="animation-delay:.37s" href="tel:+998875913330">
         <span class="ic" aria-hidden="true">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
             <path d="M6.5 3.5h3l1.5 4-2 1.5a12 12 0 0 0 6 6l1.5-2 4 1.5v3a2 2 0 0 1-2.2 2A17 17 0 0 1 4.5 5.7 2 2 0 0 1 6.5 3.5Z"/>
@@ -514,8 +516,9 @@
         </span>
       </a>
 
-      <!-- 2. Telegram -->
-      <a class="btn anim" style="animation-delay:.46s" href="https://t.me/zarraresort" target="_blank" rel="noopener">
+      <!-- 3. Написать в Telegram — ЛИЧНЫЙ ПРОФИЛЬ @zarra_resort
+           (не путать с каналом @zarraresort ниже — это разные аккаунты) -->
+      <a class="btn anim" style="animation-delay:.42s" href="https://t.me/zarra_resort" target="_blank" rel="noopener">
         <span class="ic" aria-hidden="true">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
             <path d="M21 4.5 2.8 11.4c-.9.34-.88 1.63.03 1.94l4.6 1.55 1.77 5.05c.27.77 1.28.9 1.74.22l2.35-3.4 4.6 3.4c.63.47 1.53.12 1.7-.65L21.98 5.6c.2-.9-.7-1.66-1.55-1.32Z"/>
@@ -524,15 +527,15 @@
         </span>
         <span class="tx">
           <span class="lbl" data-i18n="tg_lbl">Написать в Telegram</span>
-          <span class="sub">@zarraresort</span>
+          <span class="sub">@zarra_resort</span>
         </span>
         <span class="chev" aria-hidden="true">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>
         </span>
       </a>
 
-      <!-- 3. AI-ассистент -->
-      <a class="btn anim" style="animation-delay:.52s" href="https://t.me/zarra_resort_ai_bot" target="_blank" rel="noopener">
+      <!-- 4. AI-ассистент -->
+      <a class="btn anim" style="animation-delay:.47s" href="https://t.me/zarra_resort_ai_bot" target="_blank" rel="noopener">
         <span class="ic" aria-hidden="true">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
             <rect x="3.5" y="8" width="17" height="12" rx="3.5"/>
@@ -551,37 +554,18 @@
         </span>
       </a>
 
-      <!-- 4. Сайт -->
-      <a class="btn anim" style="animation-delay:.58s" href="https://zarra-resort.netlify.app" target="_blank" rel="noopener">
+      <!-- 5. Telegram-канал — КАНАЛ @zarraresort (не профиль выше) -->
+      <a class="btn anim" style="animation-delay:.52s" href="https://t.me/zarraresort" target="_blank" rel="noopener">
         <span class="ic" aria-hidden="true">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="12" cy="12" r="8.5"/>
-            <path d="M3.5 12h17"/>
-            <path d="M12 3.5c2.2 2.4 3.3 5.3 3.3 8.5s-1.1 6.1-3.3 8.5c-2.2-2.4-3.3-5.3-3.3-8.5S9.8 5.9 12 3.5Z"/>
+            <path d="M4 9.5v5a1.5 1.5 0 0 0 1.5 1.5H8l7.5 4.2V5.3L8 9.5H5.5A1.5 1.5 0 0 0 4 11Z"/>
+            <path d="M18.6 9a4.5 4.5 0 0 1 0 6"/>
+            <path d="M7.6 16.2l.9 3.6"/>
           </svg>
         </span>
         <span class="tx">
-          <span class="lbl" data-i18n="site_lbl">Наш сайт</span>
-          <span class="sub">zarra-resort.netlify.app</span>
-        </span>
-        <span class="chev" aria-hidden="true">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>
-        </span>
-      </a>
-
-      <!-- 5. Как доехать
-           TODO: заменить на точную ссылку (пин курорта в Google Maps / 2ГИС),
-           сейчас стоит поисковый запрос по названию. -->
-      <a class="btn anim" style="animation-delay:.64s" href="https://maps.google.com/?q=Zarra+Resort+Samarkand" target="_blank" rel="noopener">
-        <span class="ic" aria-hidden="true">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M12 21s6.5-6 6.5-11a6.5 6.5 0 1 0-13 0C5.5 15 12 21 12 21Z"/>
-            <circle cx="12" cy="10" r="2.4"/>
-          </svg>
-        </span>
-        <span class="tx">
-          <span class="lbl" data-i18n="route_lbl">Как доехать</span>
-          <span class="sub" data-i18n="route_sub">пос. Акбуйра · Самарканд</span>
+          <span class="lbl" data-i18n="tgc_lbl">Telegram-канал</span>
+          <span class="sub">@zarraresort</span>
         </span>
         <span class="chev" aria-hidden="true">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>
@@ -589,7 +573,7 @@
       </a>
 
       <!-- 6. Instagram -->
-      <a class="btn anim" style="animation-delay:.70s" href="https://instagram.com/zarraresort" target="_blank" rel="noopener">
+      <a class="btn anim" style="animation-delay:.57s" href="https://instagram.com/zarraresort" target="_blank" rel="noopener">
         <span class="ic" aria-hidden="true">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
             <rect x="3.5" y="3.5" width="17" height="17" rx="5"/>
@@ -606,10 +590,82 @@
         </span>
       </a>
 
+      <!-- 7. Сайт -->
+      <a class="btn anim" style="animation-delay:.62s" href="https://zarra-resort.netlify.app" target="_blank" rel="noopener">
+        <span class="ic" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="8.5"/>
+            <path d="M3.5 12h17"/>
+            <path d="M12 3.5c2.2 2.4 3.3 5.3 3.3 8.5s-1.1 6.1-3.3 8.5c-2.2-2.4-3.3-5.3-3.3-8.5S9.8 5.9 12 3.5Z"/>
+          </svg>
+        </span>
+        <span class="tx">
+          <span class="lbl" data-i18n="site_lbl">Наш сайт</span>
+          <span class="sub">zarra-resort.netlify.app</span>
+        </span>
+        <span class="chev" aria-hidden="true">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>
+        </span>
+      </a>
+
+      <!-- 8. Как доехать (Google Maps)
+           TODO: это по-прежнему поисковый запрос, а не точный пин. Точная
+           карточка курорта есть в 2ГИС (кнопка ниже). -->
+      <a class="btn anim" style="animation-delay:.67s" href="https://maps.google.com/?q=Zarra+Resort+Samarkand" target="_blank" rel="noopener">
+        <span class="ic" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 21s6.5-6 6.5-11a6.5 6.5 0 1 0-13 0C5.5 15 12 21 12 21Z"/>
+            <circle cx="12" cy="10" r="2.4"/>
+          </svg>
+        </span>
+        <span class="tx">
+          <span class="lbl" data-i18n="route_lbl">Как доехать</span>
+          <span class="sub" data-i18n="route_sub">пос. Акбуйра · Самарканд</span>
+        </span>
+        <span class="chev" aria-hidden="true">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>
+        </span>
+      </a>
+
+      <!-- 9. 2ГИС — точная карточка курорта -->
+      <a class="btn anim" style="animation-delay:.72s" href="https://go.2gis.com/771dE" target="_blank" rel="noopener">
+        <span class="ic" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3.5 11 20.5 4l-7 17-2.8-6.4L3.5 11Z"/>
+          </svg>
+        </span>
+        <span class="tx">
+          <span class="lbl" data-i18n="gis_lbl">Маршрут в 2ГИС</span>
+          <span class="sub" data-i18n="gis_sub">Открыть карточку курорта</span>
+        </span>
+        <span class="chev" aria-hidden="true">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>
+        </span>
+      </a>
+
+      <!-- 10. Сохранить контакт (vCard) — как в Safo, без target -->
+      <a class="btn anim" style="animation-delay:.77s" href="assets/zarra.vcf" download="Zarra-Resort.vcf">
+        <span class="ic" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="5" width="18" height="14" rx="2.5"/>
+            <circle cx="8.5" cy="11" r="2"/>
+            <path d="M5.5 16c.5-1.4 1.6-2.1 3-2.1s2.5.7 3 2.1"/>
+            <path d="M14.5 10h4M14.5 13.5h3"/>
+          </svg>
+        </span>
+        <span class="tx">
+          <span class="lbl" data-i18n="vcard_lbl">Сохранить контакт</span>
+          <span class="sub" data-i18n="vcard_sub">Добавить номер в телефон</span>
+        </span>
+        <span class="chev" aria-hidden="true">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>
+        </span>
+      </a>
+
     </nav>
 
     <!-- ======= АКЦЕНТНЫЙ БЛОК: Safo Restaurant ======= -->
-    <section class="promo anim" style="animation-delay:.76s">
+    <section class="promo anim" style="animation-delay:.84s">
       <span class="p-badge" data-i18n="promo_badge">Новый</span>
       <p class="p-title">Safo Restaurant <span data-i18n="promo_by">by Zarra Resort</span></p>
       <p class="p-text" data-i18n="promo_sub">Ресторан на территории курорта · 24/7</p>
@@ -625,7 +681,7 @@
     </section>
 
     <!-- ======= ФУТЕР ======= -->
-    <footer class="foot anim" style="animation-delay:.82s">
+    <footer class="foot anim" style="animation-delay:.90s">
       <div class="fdiv"></div>
       <span data-i18n="foot_addr">Самаркандская область, пос. Акбуйра</span> ·
       <span style="white-space:nowrap">© Zarra Resort 2026</span>
@@ -825,9 +881,14 @@
         call_lbl:"Позвонить и забронировать",
         tg_lbl:"Написать в Telegram",
         ai_lbl:"AI-ассистент — бронь и вопросы",
+        tgc_lbl:"Telegram-канал",
         site_lbl:"Наш сайт",
         route_lbl:"Как доехать",
         route_sub:"пос. Акбуйра · Самарканд",
+        gis_lbl:"Маршрут в 2ГИС",
+        gis_sub:"Открыть карточку курорта",
+        vcard_lbl:"Сохранить контакт",
+        vcard_sub:"Добавить номер в телефон",
         promo_badge:"Новый",
         promo_by:"by Zarra Resort",
         promo_sub:"Ресторан на территории курорта · 24/7",
@@ -841,9 +902,14 @@
         call_lbl:"Qo‘ng‘iroq qilib band qilish",
         tg_lbl:"Telegramda yozish",
         ai_lbl:"AI-yordamchi — bron va savollar",
+        tgc_lbl:"Telegram kanal",
         site_lbl:"Bizning sayt",
         route_lbl:"Qanday yetib borish",
         route_sub:"Akbuyra · Samarqand",
+        gis_lbl:"2GISda marshrut",
+        gis_sub:"Kurort kartochkasini ochish",
+        vcard_lbl:"Kontaktni saqlash",
+        vcard_sub:"Raqamni telefonga qo‘shish",
         promo_badge:"Yangi",
         promo_by:"by Zarra Resort",
         promo_sub:"Kurort hududidagi restoran · 24/7",
@@ -857,9 +923,14 @@
         call_lbl:"Call to book",
         tg_lbl:"Message on Telegram",
         ai_lbl:"AI assistant — booking & questions",
+        tgc_lbl:"Telegram channel",
         site_lbl:"Our website",
         route_lbl:"Get directions",
         route_sub:"Akbuyra · Samarkand",
+        gis_lbl:"Route in 2GIS",
+        gis_sub:"Open the resort listing",
+        vcard_lbl:"Save contact",
+        vcard_sub:"Add number to phone",
         promo_badge:"New",
         promo_by:"by Zarra Resort",
         promo_sub:"Restaurant on the resort grounds · 24/7",

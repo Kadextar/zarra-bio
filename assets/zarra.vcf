@@ -1,0 +1,12 @@
+BEGIN:VCARD
+VERSION:3.0
+N:Resort;Zarra;;;
+FN:Zarra Hotel & Resort
+ORG:Zarra Hotel & Resort
+TEL;TYPE=CELL,VOICE:+998875913330
+URL;TYPE=Telegram:https://t.me/zarra_resort
+URL;TYPE=Instagram:https://instagram.com/zarraresort
+URL:https://zarra-resort.netlify.app
+ADR;TYPE=WORK:;;пос. Акбуйра;Самаркандская область;;;Узбекистан
+NOTE:Горный курорт в Самарканде. Открыто 24/7. Бронирование: https://zarra-webapp.netlify.app
+END:VCARD
