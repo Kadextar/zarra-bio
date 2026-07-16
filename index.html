@@ -4,7 +4,13 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>Zarra Resort — Горный курорт в Самарканде</title>
-  <meta name="description" content="Zarra Resort — горный курорт в Самарканде. Бронирование по телефону и в Telegram, AI-ассистент, сайт, маршрут, Instagram. Открыто 24/7." />
+  <meta name="description" content="Zarra Resort — горный курорт в Самарканде. Онлайн-бронирование, Telegram, AI-ассистент, сайт, маршрут, Instagram. Открыто 24/7." />
+
+  <!-- Favicon / иконки: фирменная арка золотом на тёмном -->
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
+  <link rel="icon" href="assets/favicon-32.png" sizes="32x32" type="image/png" />
+  <link rel="icon" href="assets/favicon-16.png" sizes="16x16" type="image/png" />
+  <link rel="apple-touch-icon" href="assets/apple-touch-icon.png" />
 
   <!-- Open Graph -->
   <meta property="og:type" content="website" />
@@ -38,8 +44,11 @@
       --gold-dim:rgba(201,169,97,.32);
       --ink:#F7F4EE;                   /* тёплый белый */
       --ink-dim:rgba(247,244,238,.55);
-      --card:rgba(255,255,255,.04);
-      --card-press:rgba(201,169,97,.10);
+      /* Плашки: тёмная полупрозрачная подложка вместо backdrop-filter.
+         Золотые линии сквозь неё просвечивают, но блюр не считается на
+         каждом кадре скролла — именно он «съедал» плавность. */
+      --card:rgba(9,29,23,.58);
+      --card-press:rgba(201,169,97,.14);
       --serif:Georgia, "Times New Roman", "Iowan Old Style", serif;
       --sans:-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, system-ui, sans-serif;
     }
@@ -48,9 +57,10 @@
     html,body{margin:0;padding:0;}
 
     body{
+      /* Градиент раньше висел здесь с background-attachment:fixed — на мобильных
+         это заставляет перерисовывать фон на каждом кадре скролла. Теперь
+         градиент живёт на #bg (он и так position:fixed), а тут только цвет. */
       background:var(--bg);
-      background-image:linear-gradient(168deg, #050F0C 0%, #061A15 55%, #07211A 100%);
-      background-attachment:fixed;
       color:var(--ink);
       font-family:var(--sans);
       -webkit-font-smoothing:antialiased;
@@ -59,7 +69,7 @@
     }
 
     /* ---------- Фон: canvas с золотыми линиями ----------
-       Без JS canvas остаётся пустым — виден просто тёмный градиент body. */
+       Без JS canvas остаётся пустым — виден просто тёмный градиент. */
     #bg{
       position:fixed;
       inset:0;
@@ -68,6 +78,12 @@
       height:100%;
       display:block;
       pointer-events:none;
+      background-image:linear-gradient(168deg, #050F0C 0%, #061A15 55%, #07211A 100%);
+      /* свой GPU-слой + изоляция отрисовки: иначе мобильный Chrome
+         перерисовывает фон вместе со скроллом (тот же приём, что в Safo) */
+      transform:translateZ(0);
+      backface-visibility:hidden;
+      contain:paint;
     }
 
     /* Центрированная колонка: mobile-first (~390px), на десктопе — 480px */
@@ -230,8 +246,6 @@
       border:1px solid var(--gold-line);
       border-radius:16px;
       background:var(--card);
-      backdrop-filter:blur(8px);
-      -webkit-backdrop-filter:blur(8px);
       color:var(--ink);
       text-decoration:none;
       -webkit-tap-highlight-color:transparent;
@@ -254,6 +268,20 @@
     .btn:focus-visible{
       outline:2px solid var(--gold-bright);
       outline-offset:2px;
+    }
+
+    /* Главная кнопка (онлайн-бронь) — та же прозрачная плашка, но заметнее:
+       ярче окантовка, лёгкий золотой подтон и свечение. Заливкой не делаем,
+       чтобы не ломать концепт «прозрачные плашки с золотой окантовкой». */
+    .btn--primary{
+      border-color:var(--gold);
+      background:linear-gradient(160deg, rgba(201,169,97,.16), rgba(201,169,97,.06)), var(--card);
+      box-shadow:0 0 22px rgba(201,169,97,.18);
+    }
+    .btn--primary .lbl{color:var(--gold-bright);}
+    .btn--primary .chev{color:var(--gold);}
+    @media (hover:hover){
+      .btn--primary:hover{box-shadow:0 0 26px rgba(201,169,97,.32);}
     }
 
     /* тонкая линейная иконка золотом, без чипа и без эмодзи */
@@ -299,9 +327,7 @@
       padding:20px 18px 18px;
       border:1px solid rgba(201,169,97,.7);
       border-radius:18px;
-      background:rgba(255,255,255,.05);
-      backdrop-filter:blur(8px);
-      -webkit-backdrop-filter:blur(8px);
+      background:rgba(12,36,29,.62);
       text-align:center;
       box-shadow:0 0 26px rgba(201,169,97,.12);
     }
@@ -452,8 +478,28 @@
     <!-- ======= КНОПКИ-ССЫЛКИ ======= -->
     <nav class="links">
 
-      <!-- 1. Позвонить и забронировать -->
-      <a class="btn anim" style="animation-delay:.36s" href="tel:+998875913330">
+      <!-- 1. Онлайн-бронирование (webapp: шале → дата → тариф → заявка) -->
+      <a class="btn btn--primary anim" style="animation-delay:.34s"
+         href="https://zarra-webapp.netlify.app" target="_blank" rel="noopener">
+        <span class="ic" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3.5" y="5" width="17" height="15.5" rx="3"/>
+            <path d="M3.5 9.5h17"/>
+            <path d="M8 3.5v3M16 3.5v3"/>
+            <path d="M8.8 14.2l2.1 2.1 4.3-4.3"/>
+          </svg>
+        </span>
+        <span class="tx">
+          <span class="lbl" data-i18n="book_lbl">Забронировать онлайн</span>
+          <span class="sub" data-i18n="book_sub">Шале · даты · тарифы</span>
+        </span>
+        <span class="chev" aria-hidden="true">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>
+        </span>
+      </a>
+
+      <!-- 2. Позвонить и забронировать -->
+      <a class="btn anim" style="animation-delay:.40s" href="tel:+998875913330">
         <span class="ic" aria-hidden="true">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
             <path d="M6.5 3.5h3l1.5 4-2 1.5a12 12 0 0 0 6 6l1.5-2 4 1.5v3a2 2 0 0 1-2.2 2A17 17 0 0 1 4.5 5.7 2 2 0 0 1 6.5 3.5Z"/>
@@ -469,7 +515,7 @@
       </a>
 
       <!-- 2. Telegram -->
-      <a class="btn anim" style="animation-delay:.42s" href="https://t.me/zarraresort" target="_blank" rel="noopener">
+      <a class="btn anim" style="animation-delay:.46s" href="https://t.me/zarraresort" target="_blank" rel="noopener">
         <span class="ic" aria-hidden="true">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
             <path d="M21 4.5 2.8 11.4c-.9.34-.88 1.63.03 1.94l4.6 1.55 1.77 5.05c.27.77 1.28.9 1.74.22l2.35-3.4 4.6 3.4c.63.47 1.53.12 1.7-.65L21.98 5.6c.2-.9-.7-1.66-1.55-1.32Z"/>
@@ -486,7 +532,7 @@
       </a>
 
       <!-- 3. AI-ассистент -->
-      <a class="btn anim" style="animation-delay:.48s" href="https://t.me/zarra_resort_ai_bot" target="_blank" rel="noopener">
+      <a class="btn anim" style="animation-delay:.52s" href="https://t.me/zarra_resort_ai_bot" target="_blank" rel="noopener">
         <span class="ic" aria-hidden="true">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
             <rect x="3.5" y="8" width="17" height="12" rx="3.5"/>
@@ -506,7 +552,7 @@
       </a>
 
       <!-- 4. Сайт -->
-      <a class="btn anim" style="animation-delay:.54s" href="https://zarra-resort.netlify.app" target="_blank" rel="noopener">
+      <a class="btn anim" style="animation-delay:.58s" href="https://zarra-resort.netlify.app" target="_blank" rel="noopener">
         <span class="ic" aria-hidden="true">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
             <circle cx="12" cy="12" r="8.5"/>
@@ -526,7 +572,7 @@
       <!-- 5. Как доехать
            TODO: заменить на точную ссылку (пин курорта в Google Maps / 2ГИС),
            сейчас стоит поисковый запрос по названию. -->
-      <a class="btn anim" style="animation-delay:.60s" href="https://maps.google.com/?q=Zarra+Resort+Samarkand" target="_blank" rel="noopener">
+      <a class="btn anim" style="animation-delay:.64s" href="https://maps.google.com/?q=Zarra+Resort+Samarkand" target="_blank" rel="noopener">
         <span class="ic" aria-hidden="true">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
             <path d="M12 21s6.5-6 6.5-11a6.5 6.5 0 1 0-13 0C5.5 15 12 21 12 21Z"/>
@@ -543,7 +589,7 @@
       </a>
 
       <!-- 6. Instagram -->
-      <a class="btn anim" style="animation-delay:.66s" href="https://instagram.com/zarraresort" target="_blank" rel="noopener">
+      <a class="btn anim" style="animation-delay:.70s" href="https://instagram.com/zarraresort" target="_blank" rel="noopener">
         <span class="ic" aria-hidden="true">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
             <rect x="3.5" y="3.5" width="17" height="17" rx="5"/>
@@ -563,7 +609,7 @@
     </nav>
 
     <!-- ======= АКЦЕНТНЫЙ БЛОК: Safo Restaurant ======= -->
-    <section class="promo anim" style="animation-delay:.72s">
+    <section class="promo anim" style="animation-delay:.76s">
       <span class="p-badge" data-i18n="promo_badge">Новый</span>
       <p class="p-title">Safo Restaurant <span data-i18n="promo_by">by Zarra Resort</span></p>
       <p class="p-text" data-i18n="promo_sub">Ресторан на территории курорта · 24/7</p>
@@ -579,7 +625,7 @@
     </section>
 
     <!-- ======= ФУТЕР ======= -->
-    <footer class="foot anim" style="animation-delay:.78s">
+    <footer class="foot anim" style="animation-delay:.82s">
       <div class="fdiv"></div>
       <span data-i18n="foot_addr">Самаркандская область, пос. Акбуйра</span> ·
       <span style="white-space:nowrap">© Zarra Resort 2026</span>
@@ -743,6 +789,20 @@
         else if (!motionMQ.matches) start();
       });
 
+      /* Пауза на время скролла.
+         Отрисовка линий и прокрутка делят один главный поток, и на телефоне
+         это заметно по «зернистости» жеста. Линии двигаются медленно, поэтому
+         заморозка на доли секунды флика глазу не видна, а скролл становится
+         таким же гладким, как в Safo (там фон вообще не перерисовывается). */
+      var scrollTimer = null;
+      window.addEventListener('scroll', function () {
+        stop();
+        clearTimeout(scrollTimer);
+        scrollTimer = setTimeout(function () {
+          if (!document.hidden && !motionMQ.matches) start();
+        }, 140);
+      }, { passive: true });
+
       if (motionMQ.addEventListener) motionMQ.addEventListener('change', apply);
       else if (motionMQ.addListener) motionMQ.addListener(apply);
 
@@ -760,6 +820,8 @@
     var I18N = {
       ru: {
         status:"Открыто 24/7",
+        book_lbl:"Забронировать онлайн",
+        book_sub:"Шале · даты · тарифы",
         call_lbl:"Позвонить и забронировать",
         tg_lbl:"Написать в Telegram",
         ai_lbl:"AI-ассистент — бронь и вопросы",
@@ -774,6 +836,8 @@
       },
       uz: {
         status:"24/7 ochiq",
+        book_lbl:"Onlayn band qilish",
+        book_sub:"Shale · sanalar · tariflar",
         call_lbl:"Qo‘ng‘iroq qilib band qilish",
         tg_lbl:"Telegramda yozish",
         ai_lbl:"AI-yordamchi — bron va savollar",
@@ -788,6 +852,8 @@
       },
       en: {
         status:"Open 24/7",
+        book_lbl:"Book online",
+        book_sub:"Chalets · dates · rates",
         call_lbl:"Call to book",
         tg_lbl:"Message on Telegram",
         ai_lbl:"AI assistant — booking & questions",
