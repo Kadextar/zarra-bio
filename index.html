@@ -1,0 +1,832 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Zarra Resort — Горный курорт в Самарканде</title>
+  <meta name="description" content="Zarra Resort — горный курорт в Самарканде. Бронирование по телефону и в Telegram, AI-ассистент, сайт, маршрут, Instagram. Открыто 24/7." />
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Zarra Resort" />
+  <meta property="og:locale" content="ru_RU" />
+  <meta property="og:title" content="Zarra Resort — Горный курорт в Самарканде" />
+  <meta property="og:description" content="Горный курорт в Самарканде. Бронирование, AI-ассистент, маршрут и ресторан Safo. Открыто 24/7." />
+  <meta property="og:url" content="https://zarra-bio.netlify.app/" />
+  <!-- TODO: og:image и og:url обязаны быть абсолютными и вести на РЕАЛЬНЫЙ домен.
+       Домен zarra-bio.netlify.app — предположение; если адрес другой, поправить оба тега,
+       иначе превью в Telegram/WhatsApp останется без картинки. -->
+  <meta property="og:image" content="https://zarra-bio.netlify.app/assets/og-zarra.jpg" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Zarra Resort — Горный курорт в Самарканде" />
+  <meta name="twitter:description" content="Горный курорт в Самарканде. Бронирование, AI-ассистент, маршрут и ресторан Safo. Открыто 24/7." />
+  <meta name="twitter:image" content="https://zarra-bio.netlify.app/assets/og-zarra.jpg" />
+
+  <meta name="theme-color" content="#050F0C" />
+
+  <style>
+    :root{
+      /* ===== Тёмная тема с золотом (зеркало кремовой темы Safo) ===== */
+      --bg:#050F0C;                    /* почти чёрный с изумрудным подтоном */
+      --bg-deep:#07211A;
+      --gold:#C9A961;                  /* фирменное золото, общее с Safo */
+      --gold-bright:#E3C888;
+      --gold-line:rgba(201,169,97,.55);
+      --gold-dim:rgba(201,169,97,.32);
+      --ink:#F7F4EE;                   /* тёплый белый */
+      --ink-dim:rgba(247,244,238,.55);
+      --card:rgba(255,255,255,.04);
+      --card-press:rgba(201,169,97,.10);
+      --serif:Georgia, "Times New Roman", "Iowan Old Style", serif;
+      --sans:-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, system-ui, sans-serif;
+    }
+
+    *{box-sizing:border-box;}
+    html,body{margin:0;padding:0;}
+
+    body{
+      background:var(--bg);
+      background-image:linear-gradient(168deg, #050F0C 0%, #061A15 55%, #07211A 100%);
+      background-attachment:fixed;
+      color:var(--ink);
+      font-family:var(--sans);
+      -webkit-font-smoothing:antialiased;
+      text-rendering:optimizeLegibility;
+      min-height:100vh;
+    }
+
+    /* ---------- Фон: canvas с золотыми линиями ----------
+       Без JS canvas остаётся пустым — виден просто тёмный градиент body. */
+    #bg{
+      position:fixed;
+      inset:0;
+      z-index:0;
+      width:100%;
+      height:100%;
+      display:block;
+      pointer-events:none;
+    }
+
+    /* Центрированная колонка: mobile-first (~390px), на десктопе — 480px */
+    .page{
+      position:relative;
+      z-index:1;
+      max-width:480px;
+      margin:0 auto;
+      min-height:100vh;
+      padding:0 0 8px;
+    }
+    /* На широком экране колонка «висит» в пустоте, а фото шапки торчит резким
+       прямоугольником. Тонкая золотая рамка собирает её в карточку — как в Safo.
+       На телефоне колонка и так во всю ширину, рамка там не нужна. */
+    @media (min-width:520px){
+      .page{box-shadow:0 0 0 1px rgba(201,169,97,.16);}
+    }
+
+    /* ---------- Переключатель языков ----------
+       Лежит поверх светлого фото, поэтому подложка тёмная, а не белёсая. */
+    .langbar{
+      position:absolute;
+      top:calc(14px + env(safe-area-inset-top));
+      right:16px;
+      z-index:6;
+      display:flex;
+      gap:2px;
+      padding:3px;
+      background:rgba(5,15,12,.5);
+      border:1px solid var(--gold-dim);
+      border-radius:100px;
+      backdrop-filter:blur(8px);
+      -webkit-backdrop-filter:blur(8px);
+    }
+    .lang-btn{
+      border:0;
+      background:transparent;
+      color:var(--ink-dim);
+      font-family:var(--sans);
+      font-size:11.5px;
+      font-weight:700;
+      letter-spacing:.5px;
+      padding:5px 10px;
+      border-radius:100px;
+      cursor:pointer;
+      -webkit-tap-highlight-color:transparent;
+      transition:background .16s ease, color .16s ease;
+    }
+    .lang-btn.active{background:var(--gold);color:#08130F;}
+
+    /* ---------- Шапка с фото ---------- */
+    .hero{
+      position:relative;
+      width:100%;
+      height:240px;
+      overflow:hidden;
+    }
+    .hero-photo{
+      width:100%;
+      height:100%;
+      object-fit:cover;
+      object-position:center 62%;
+      display:block;
+    }
+    /* сверху притемняем — иначе светлое небо бьёт по глазам и «съедает» langbar */
+    .hero::before{
+      content:"";
+      position:absolute;inset:0;
+      background:linear-gradient(to bottom, rgba(5,15,12,.55), rgba(5,15,12,0) 45%);
+      pointer-events:none;
+      z-index:1;
+    }
+    /* снизу растворяем фото в тёмный фон страницы */
+    .hero-fade{
+      position:absolute;
+      left:0;right:0;bottom:-1px;
+      height:140px;
+      background:linear-gradient(to bottom, rgba(5,15,12,0) 0%, rgba(5,15,12,.75) 55%, var(--bg) 100%);
+      pointer-events:none;
+      z-index:1;
+    }
+
+    /* ---------- Логотип (цельный, как в Safo) ---------- */
+    .logo-wrap{
+      display:flex;
+      justify-content:center;
+      margin-top:-30px;          /* логотип наезжает на фото */
+      position:relative;
+      z-index:2;
+      padding:0 24px;
+    }
+    .logo{
+      width:100%;
+      max-width:210px;
+      height:auto;
+      display:block;
+      filter:drop-shadow(0 6px 18px rgba(5,15,12,.55));
+    }
+
+    /* ---------- Заголовки / статус ---------- */
+    .head{
+      text-align:center;
+      padding:18px 26px 0;
+    }
+    .status{
+      font-family:var(--sans);
+      font-size:11px;
+      font-weight:600;
+      letter-spacing:1.6px;
+      text-transform:uppercase;
+      color:var(--ink);
+      margin:16px 0 0;
+      display:inline-flex;
+      align-items:center;
+      gap:9px;
+      padding:8px 16px 8px 13px;
+      border:1px solid var(--gold-dim);
+      border-radius:100px;
+      background:rgba(255,255,255,.03);
+    }
+    .status .dot{
+      position:relative;
+      width:7px;height:7px;border-radius:50%;
+      background:var(--gold);
+      flex:0 0 auto;
+      box-shadow:0 0 8px rgba(201,169,97,.9);
+    }
+    .status .dot::after{
+      content:"";
+      position:absolute;inset:0;border-radius:50%;
+      background:var(--gold);
+      animation:pulse 2.4s ease-out infinite;
+    }
+    @keyframes pulse{
+      0%{transform:scale(1);opacity:.6;}
+      70%{transform:scale(2.6);opacity:0;}
+      100%{opacity:0;}
+    }
+
+    .divider{
+      width:52px;height:1px;
+      background:linear-gradient(90deg, transparent, var(--gold), transparent);
+      margin:22px auto 4px;
+      border:0;
+    }
+
+    /* ---------- Кнопки-карточки ---------- */
+    .links{
+      padding:16px 22px 6px;
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+    }
+    .btn{
+      display:flex;
+      align-items:center;
+      gap:14px;
+      width:100%;
+      padding:14px 15px;
+      border:1px solid var(--gold-line);
+      border-radius:16px;
+      background:var(--card);
+      backdrop-filter:blur(8px);
+      -webkit-backdrop-filter:blur(8px);
+      color:var(--ink);
+      text-decoration:none;
+      -webkit-tap-highlight-color:transparent;
+      transition:border-color .18s ease, transform .08s ease, box-shadow .18s ease, background .18s ease;
+    }
+    .btn:active{
+      background:var(--card-press);
+      border-color:var(--gold-bright);
+      box-shadow:0 0 18px rgba(201,169,97,.28);
+      transform:scale(.985);
+    }
+    @media (hover:hover){
+      .btn:hover{
+        border-color:var(--gold-bright);
+        background:rgba(255,255,255,.06);
+        box-shadow:0 0 20px rgba(201,169,97,.22);
+      }
+      .btn:hover .chev{transform:translateX(3px);color:var(--gold);}
+    }
+    .btn:focus-visible{
+      outline:2px solid var(--gold-bright);
+      outline-offset:2px;
+    }
+
+    /* тонкая линейная иконка золотом, без чипа и без эмодзи */
+    .btn .ic{
+      flex:0 0 auto;
+      width:24px;height:24px;
+      color:var(--gold);
+      display:block;
+    }
+    .btn .ic svg{width:24px;height:24px;display:block;}
+    .btn .tx{
+      flex:1 1 auto;
+      min-width:0;
+      display:flex;
+      flex-direction:column;
+      gap:3px;
+    }
+    .btn .lbl{
+      font-size:15px;
+      font-weight:600;
+      letter-spacing:.1px;
+      line-height:1.25;
+    }
+    .btn .sub{
+      font-size:12.5px;
+      font-weight:400;
+      color:var(--ink-dim);
+      letter-spacing:.2px;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+    .btn .chev{
+      flex:0 0 auto;
+      color:var(--gold-dim);
+      transition:transform .2s cubic-bezier(.22,.61,.36,1), color .18s ease;
+    }
+
+    /* ---------- Акцентный блок: Safo Restaurant ---------- */
+    .promo{
+      position:relative;
+      margin:22px 22px 4px;
+      padding:20px 18px 18px;
+      border:1px solid rgba(201,169,97,.7);
+      border-radius:18px;
+      background:rgba(255,255,255,.05);
+      backdrop-filter:blur(8px);
+      -webkit-backdrop-filter:blur(8px);
+      text-align:center;
+      box-shadow:0 0 26px rgba(201,169,97,.12);
+    }
+    /* деликатный золотой градиент по самому краю (маска рисует только рамку) */
+    @supports ((-webkit-mask-composite:xor) or (mask-composite:exclude)){
+      .promo::before{
+        content:"";
+        position:absolute;inset:0;
+        border-radius:inherit;
+        padding:1px;
+        background:linear-gradient(135deg, var(--gold-bright), rgba(201,169,97,.12) 45%, var(--gold-bright));
+        -webkit-mask:linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+        -webkit-mask-composite:xor;
+        mask:linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+        mask-composite:exclude;
+        pointer-events:none;
+      }
+    }
+    .promo .p-badge{
+      display:inline-block;
+      font-size:9.5px;
+      font-weight:700;
+      letter-spacing:1.4px;
+      text-transform:uppercase;
+      color:#08130F;
+      background:var(--gold);
+      padding:3px 9px;
+      border-radius:100px;
+      margin:0 0 11px;
+    }
+    .promo .p-title{
+      font-family:var(--serif);
+      font-weight:400;
+      font-size:19px;
+      line-height:1.35;
+      letter-spacing:.4px;
+      margin:0 0 6px;
+    }
+    .promo .p-text{
+      font-size:11px;
+      font-weight:600;
+      text-transform:uppercase;
+      letter-spacing:1.3px;
+      color:var(--gold);
+      margin:0 0 16px;
+      line-height:1.5;
+    }
+    .promo .p-btn{
+      display:inline-flex;
+      align-items:center;
+      gap:9px;
+      padding:11px 20px;
+      border:1px solid var(--gold);
+      border-radius:14px;
+      color:var(--gold-bright);
+      background:rgba(201,169,97,.08);
+      text-decoration:none;
+      font-size:13.5px;
+      font-weight:600;
+      letter-spacing:.4px;
+      -webkit-tap-highlight-color:transparent;
+      transition:background .18s ease, color .18s ease, box-shadow .18s ease;
+    }
+    .promo .p-btn:active{background:var(--gold);color:#08130F;box-shadow:0 0 18px rgba(201,169,97,.4);}
+    @media (hover:hover){
+      .promo .p-btn:hover{background:rgba(201,169,97,.18);box-shadow:0 0 18px rgba(201,169,97,.3);}
+    }
+    .promo .p-btn svg{width:16px;height:16px;}
+
+    /* ---------- Футер ---------- */
+    .foot{
+      text-align:center;
+      padding:28px 26px calc(30px + env(safe-area-inset-bottom));
+      font-size:11px;
+      line-height:1.6;
+      letter-spacing:.3px;
+      color:var(--ink-dim);
+    }
+    .foot .fdiv{
+      width:40px;height:1px;
+      background:var(--gold-dim);
+      margin:0 auto 16px;
+    }
+
+    .sr-only{
+      position:absolute;width:1px;height:1px;
+      padding:0;margin:-1px;overflow:hidden;
+      clip:rect(0,0,0,0);white-space:nowrap;border:0;
+    }
+
+    /* ---------- Появление: fade + slide-up каскадом по 60мс ----------
+       Работает и без JS: animation-fill-mode:both держит конечное состояние. */
+    @keyframes rise{
+      from{opacity:0;transform:translateY(14px);}
+      to{opacity:1;transform:translateY(0);}
+    }
+    .anim{
+      opacity:0;
+      animation:rise .6s cubic-bezier(.22,.61,.36,1) both;
+    }
+
+    @media (prefers-reduced-motion:reduce){
+      .anim{animation:none;opacity:1;transform:none;}
+      .status .dot::after{animation:none;opacity:0;}
+      .btn,.promo .p-btn,.btn .chev{transition:none;}
+    }
+  </style>
+</head>
+<body>
+  <!-- ======= ФОН: анимированные золотые линии ======= -->
+  <canvas id="bg" aria-hidden="true"></canvas>
+
+  <main class="page">
+
+    <!-- ======= ПЕРЕКЛЮЧАТЕЛЬ ЯЗЫКОВ ======= -->
+    <div class="langbar" role="group" aria-label="Язык / Language">
+      <button class="lang-btn active" data-lang="ru" type="button">RU</button>
+      <button class="lang-btn" data-lang="uz" type="button">UZ</button>
+      <button class="lang-btn" data-lang="en" type="button">EN</button>
+    </div>
+
+    <!-- ======= ШАПКА: фото курорта ======= -->
+    <header class="hero">
+      <img class="hero-photo" src="assets/hero.jpg"
+           alt="Бассейн и горы — Zarra Resort, Самарканд"
+           width="1200" height="750" />
+      <div class="hero-fade"></div>
+    </header>
+
+    <!-- ======= ЛОГОТИП (цельный, как в Safo) =======
+         Белая версия фирменного логотипа для тёмного фона (из ZARRA 3.png). -->
+    <div class="logo-wrap">
+      <img class="logo anim" style="animation-delay:.06s"
+           src="assets/logo-zarra-white.png" alt="Zarra Hotel & Resort"
+           width="700" height="603" />
+    </div>
+
+    <!-- ======= ЗАГОЛОВОК / СТАТУС ======= -->
+    <section class="head">
+      <h1 class="sr-only">Zarra Resort — Горный курорт, Самарканд</h1>
+      <p class="status anim" style="animation-delay:.18s">
+        <span class="dot" aria-hidden="true"></span>
+        <span data-i18n="status">Открыто 24/7</span>
+      </p>
+      <hr class="divider anim" style="animation-delay:.30s" />
+    </section>
+
+    <!-- ======= КНОПКИ-ССЫЛКИ ======= -->
+    <nav class="links">
+
+      <!-- 1. Позвонить и забронировать -->
+      <a class="btn anim" style="animation-delay:.36s" href="tel:+998875913330">
+        <span class="ic" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M6.5 3.5h3l1.5 4-2 1.5a12 12 0 0 0 6 6l1.5-2 4 1.5v3a2 2 0 0 1-2.2 2A17 17 0 0 1 4.5 5.7 2 2 0 0 1 6.5 3.5Z"/>
+          </svg>
+        </span>
+        <span class="tx">
+          <span class="lbl" data-i18n="call_lbl">Позвонить и забронировать</span>
+          <span class="sub">+998 87 591 33 30</span>
+        </span>
+        <span class="chev" aria-hidden="true">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>
+        </span>
+      </a>
+
+      <!-- 2. Telegram -->
+      <a class="btn anim" style="animation-delay:.42s" href="https://t.me/zarraresort" target="_blank" rel="noopener">
+        <span class="ic" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 4.5 2.8 11.4c-.9.34-.88 1.63.03 1.94l4.6 1.55 1.77 5.05c.27.77 1.28.9 1.74.22l2.35-3.4 4.6 3.4c.63.47 1.53.12 1.7-.65L21.98 5.6c.2-.9-.7-1.66-1.55-1.32Z"/>
+            <path d="M8 14.5 17 8l-6.4 7.2"/>
+          </svg>
+        </span>
+        <span class="tx">
+          <span class="lbl" data-i18n="tg_lbl">Написать в Telegram</span>
+          <span class="sub">@zarraresort</span>
+        </span>
+        <span class="chev" aria-hidden="true">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>
+        </span>
+      </a>
+
+      <!-- 3. AI-ассистент -->
+      <a class="btn anim" style="animation-delay:.48s" href="https://t.me/zarra_resort_ai_bot" target="_blank" rel="noopener">
+        <span class="ic" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3.5" y="8" width="17" height="12" rx="3.5"/>
+            <path d="M12 8V4.8"/>
+            <circle cx="12" cy="3.6" r="1.3"/>
+            <path d="M8.6 13v1.6M15.4 13v1.6"/>
+            <path d="M9.8 17.2h4.4"/>
+          </svg>
+        </span>
+        <span class="tx">
+          <span class="lbl" data-i18n="ai_lbl">AI-ассистент — бронь и вопросы</span>
+          <span class="sub">@zarra_resort_ai_bot</span>
+        </span>
+        <span class="chev" aria-hidden="true">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>
+        </span>
+      </a>
+
+      <!-- 4. Сайт -->
+      <a class="btn anim" style="animation-delay:.54s" href="https://zarra-resort.netlify.app" target="_blank" rel="noopener">
+        <span class="ic" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="8.5"/>
+            <path d="M3.5 12h17"/>
+            <path d="M12 3.5c2.2 2.4 3.3 5.3 3.3 8.5s-1.1 6.1-3.3 8.5c-2.2-2.4-3.3-5.3-3.3-8.5S9.8 5.9 12 3.5Z"/>
+          </svg>
+        </span>
+        <span class="tx">
+          <span class="lbl" data-i18n="site_lbl">Наш сайт</span>
+          <span class="sub">zarra-resort.netlify.app</span>
+        </span>
+        <span class="chev" aria-hidden="true">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>
+        </span>
+      </a>
+
+      <!-- 5. Как доехать
+           TODO: заменить на точную ссылку (пин курорта в Google Maps / 2ГИС),
+           сейчас стоит поисковый запрос по названию. -->
+      <a class="btn anim" style="animation-delay:.60s" href="https://maps.google.com/?q=Zarra+Resort+Samarkand" target="_blank" rel="noopener">
+        <span class="ic" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 21s6.5-6 6.5-11a6.5 6.5 0 1 0-13 0C5.5 15 12 21 12 21Z"/>
+            <circle cx="12" cy="10" r="2.4"/>
+          </svg>
+        </span>
+        <span class="tx">
+          <span class="lbl" data-i18n="route_lbl">Как доехать</span>
+          <span class="sub" data-i18n="route_sub">пос. Акбуйра · Самарканд</span>
+        </span>
+        <span class="chev" aria-hidden="true">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>
+        </span>
+      </a>
+
+      <!-- 6. Instagram -->
+      <a class="btn anim" style="animation-delay:.66s" href="https://instagram.com/zarraresort" target="_blank" rel="noopener">
+        <span class="ic" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3.5" y="3.5" width="17" height="17" rx="5"/>
+            <circle cx="12" cy="12" r="4"/>
+            <circle cx="17.3" cy="6.7" r="1" fill="currentColor" stroke="none"/>
+          </svg>
+        </span>
+        <span class="tx">
+          <span class="lbl">Instagram</span>
+          <span class="sub">@zarraresort</span>
+        </span>
+        <span class="chev" aria-hidden="true">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>
+        </span>
+      </a>
+
+    </nav>
+
+    <!-- ======= АКЦЕНТНЫЙ БЛОК: Safo Restaurant ======= -->
+    <section class="promo anim" style="animation-delay:.72s">
+      <span class="p-badge" data-i18n="promo_badge">Новый</span>
+      <p class="p-title">Safo Restaurant <span data-i18n="promo_by">by Zarra Resort</span></p>
+      <p class="p-text" data-i18n="promo_sub">Ресторан на территории курорта · 24/7</p>
+      <a class="p-btn" href="https://safo-bio.netlify.app" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M7 3v18"/>
+          <path d="M5 3v4a2 2 0 0 0 4 0V3"/>
+          <path d="M17 3c-1.6 0-2.6 2-2.6 5s1 4 2.6 4"/>
+          <path d="M17 3v18"/>
+        </svg>
+        <span data-i18n="promo_btn">Страница ресторана</span>
+      </a>
+    </section>
+
+    <!-- ======= ФУТЕР ======= -->
+    <footer class="foot anim" style="animation-delay:.78s">
+      <div class="fdiv"></div>
+      <span data-i18n="foot_addr">Самаркандская область, пос. Акбуйра</span> ·
+      <span style="white-space:nowrap">© Zarra Resort 2026</span>
+    </footer>
+
+  </main>
+
+  <script>
+  (function () {
+    'use strict';
+
+    /* Страховка из опыта Safo: на мобильных opacity:0 иногда «залипал»
+       после каскада. CSS-анимация самодостаточна (fill-mode:both), это
+       лишь подстраховка — без JS страница и так читается. */
+    setTimeout(function () {
+      var els = document.querySelectorAll('.anim');
+      for (var i = 0; i < els.length; i++) {
+        els[i].classList.remove('anim');
+        els[i].style.opacity = '1';
+      }
+    }, 2000);
+
+    /* ==========================================================
+       1. ФОН: золотые линии на canvas
+       ========================================================== */
+    var canvas = document.getElementById('bg');
+    var ctx = canvas && canvas.getContext ? canvas.getContext('2d') : null;
+
+    if (ctx) {
+      var W = 0, H = 0;
+      var TILT = -0.17;           // общий наклон «светового потока», рад
+      var GOLD = '201,169,97';
+
+      /* Каждая линия — сумма двух синусоид: несущая волна + мелкая рябь.
+         base   — доля высоты экрана
+         a/f/s  — амплитуда / частота / скорость каждой синусоиды
+         drift  — медленный вертикальный дрейф всей кривой
+         o/sh   — базовая прозрачность и размах мерцания (итог держим в 0.15–0.5)
+         w      — толщина ядра линии, px */
+      var LINES = [
+        { base:.10, a1:46, f1:.0060, s1:.13, a2:16, f2:.0170, s2:.21, drift:26, dS:.07, ph:0.4, w:1.5, o:.34, sh:.13, oS:.21 },
+        { base:.24, a1:58, f1:.0044, s1:.10, a2:12, f2:.0210, s2:.17, drift:32, dS:.05, ph:1.9, w:1.1, o:.24, sh:.09, oS:.16 },
+        { base:.37, a1:38, f1:.0072, s1:.16, a2:19, f2:.0135, s2:.24, drift:22, dS:.09, ph:3.1, w:1.8, o:.40, sh:.10, oS:.13 },
+        { base:.50, a1:64, f1:.0038, s1:.08, a2:14, f2:.0195, s2:.19, drift:36, dS:.04, ph:0.9, w:1.2, o:.27, sh:.12, oS:.24 },
+        { base:.63, a1:42, f1:.0066, s1:.14, a2:21, f2:.0150, s2:.22, drift:28, dS:.08, ph:4.7, w:1.6, o:.36, sh:.11, oS:.18 },
+        { base:.77, a1:54, f1:.0050, s1:.11, a2:11, f2:.0225, s2:.15, drift:30, dS:.06, ph:2.4, w:1.0, o:.22, sh:.07, oS:.20 },
+        { base:.90, a1:48, f1:.0058, s1:.12, a2:17, f2:.0165, s2:.20, drift:24, dS:.07, ph:5.6, w:1.4, o:.31, sh:.12, oS:.15 }
+      ];
+
+      function resize() {
+        // DPR режем на 2: выше — только лишний филлрейт, на глаз разницы нет
+        var dpr = Math.min(window.devicePixelRatio || 1, 2);
+        W = canvas.clientWidth;
+        H = canvas.clientHeight;
+        canvas.width = Math.round(W * dpr);
+        canvas.height = Math.round(H * dpr);
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      }
+
+      function draw(t) {
+        ctx.clearRect(0, 0, W, H);
+        ctx.save();
+        ctx.translate(W / 2, H / 2);
+        ctx.rotate(TILT);
+        ctx.translate(-W / 2, -H / 2);
+
+        // additive-смешивание: пересечения линий светятся, а не мутнеют
+        ctx.globalCompositeOperation = 'lighter';
+        ctx.lineCap = 'round';
+
+        // с запасом за края, чтобы наклон не обнажал углы
+        var x0 = -W * 0.35;
+        var span = W * 1.7;
+        var steps = Math.max(24, Math.min(64, Math.round(W / 12)));
+
+        for (var i = 0; i < LINES.length; i++) {
+          var L = LINES[i];
+          var yShift = Math.sin(t * L.dS + L.ph) * L.drift;
+
+          ctx.beginPath();
+          for (var j = 0; j <= steps; j++) {
+            var x = x0 + span * (j / steps);
+            var y = L.base * H
+                  + Math.sin(x * L.f1 + t * L.s1 + L.ph) * L.a1
+                  + Math.sin(x * L.f2 - t * L.s2 + L.ph * 1.7) * L.a2
+                  + yShift;
+            if (j) ctx.lineTo(x, y); else ctx.moveTo(x, y);
+          }
+
+          var al = L.o + Math.sin(t * L.oS + L.ph) * L.sh;
+          if (al < .15) al = .15; else if (al > .5) al = .5;
+
+          // Свечение имитируем двумя широкими полупрозрачными обводками:
+          // shadowBlur на каждом кадре стоил бы кратно дороже.
+          ctx.strokeStyle = 'rgba(' + GOLD + ',' + (al * 0.06).toFixed(3) + ')';
+          ctx.lineWidth = L.w * 7;
+          ctx.stroke();
+
+          ctx.strokeStyle = 'rgba(' + GOLD + ',' + (al * 0.14).toFixed(3) + ')';
+          ctx.lineWidth = L.w * 2.6;
+          ctx.stroke();
+
+          ctx.strokeStyle = 'rgba(' + GOLD + ',' + al.toFixed(3) + ')';
+          ctx.lineWidth = L.w;
+          ctx.stroke();
+        }
+
+        ctx.restore();
+      }
+
+      var rafId = null, last = 0, clock = 0;
+      var motionMQ = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+      function frame(now) {
+        if (!last) last = now;
+        var dt = now - last;
+        if (dt > 50) dt = 50;      // после лага не прыгаем вперёд
+        last = now;
+        clock += dt / 1000;
+        draw(clock);
+        rafId = window.requestAnimationFrame(frame);
+      }
+
+      function start() {
+        if (rafId === null && !motionMQ.matches) {
+          last = 0;
+          rafId = window.requestAnimationFrame(frame);
+        }
+      }
+      function stop() {
+        if (rafId !== null) {
+          window.cancelAnimationFrame(rafId);
+          rafId = null;
+        }
+      }
+
+      function apply() {
+        stop();
+        resize();
+        if (motionMQ.matches) draw(0);   // статичный кадр вместо анимации
+        else start();
+      }
+
+      // Мобильный браузер шлёт resize при каждом скрытии адресной строки —
+      // реагируем только на смену ширины или существенную смену высоты.
+      var lastW = 0, lastH = 0, rzTimer = null;
+      window.addEventListener('resize', function () {
+        clearTimeout(rzTimer);
+        rzTimer = setTimeout(function () {
+          var w = canvas.clientWidth, h = canvas.clientHeight;
+          if (w === lastW && Math.abs(h - lastH) < 120) return;
+          lastW = w; lastH = h;
+          resize();
+          if (motionMQ.matches) draw(0);
+        }, 150);
+      });
+
+      // Вкладка не видна — не жжём батарею
+      document.addEventListener('visibilitychange', function () {
+        if (document.hidden) stop();
+        else if (!motionMQ.matches) start();
+      });
+
+      if (motionMQ.addEventListener) motionMQ.addEventListener('change', apply);
+      else if (motionMQ.addListener) motionMQ.addListener(apply);
+
+      lastW = canvas.clientWidth;
+      lastH = canvas.clientHeight;
+      apply();
+    }
+
+    /* ==========================================================
+       2. Языки RU / UZ / EN
+       RU — основной. UZ и EN — ЧЕРНОВОЙ перевод, отдать на вычитку
+       носителю перед публикацией.
+       Выбор языка живёт только в переменной currentLang (без localStorage).
+       ========================================================== */
+    var I18N = {
+      ru: {
+        status:"Открыто 24/7",
+        call_lbl:"Позвонить и забронировать",
+        tg_lbl:"Написать в Telegram",
+        ai_lbl:"AI-ассистент — бронь и вопросы",
+        site_lbl:"Наш сайт",
+        route_lbl:"Как доехать",
+        route_sub:"пос. Акбуйра · Самарканд",
+        promo_badge:"Новый",
+        promo_by:"by Zarra Resort",
+        promo_sub:"Ресторан на территории курорта · 24/7",
+        promo_btn:"Страница ресторана",
+        foot_addr:"Самаркандская область, пос. Акбуйра"
+      },
+      uz: {
+        status:"24/7 ochiq",
+        call_lbl:"Qo‘ng‘iroq qilib band qilish",
+        tg_lbl:"Telegramda yozish",
+        ai_lbl:"AI-yordamchi — bron va savollar",
+        site_lbl:"Bizning sayt",
+        route_lbl:"Qanday yetib borish",
+        route_sub:"Akbuyra · Samarqand",
+        promo_badge:"Yangi",
+        promo_by:"by Zarra Resort",
+        promo_sub:"Kurort hududidagi restoran · 24/7",
+        promo_btn:"Restoran sahifasi",
+        foot_addr:"Samarqand viloyati, Akbuyra qishlog‘i"
+      },
+      en: {
+        status:"Open 24/7",
+        call_lbl:"Call to book",
+        tg_lbl:"Message on Telegram",
+        ai_lbl:"AI assistant — booking & questions",
+        site_lbl:"Our website",
+        route_lbl:"Get directions",
+        route_sub:"Akbuyra · Samarkand",
+        promo_badge:"New",
+        promo_by:"by Zarra Resort",
+        promo_sub:"Restaurant on the resort grounds · 24/7",
+        promo_btn:"Restaurant page",
+        foot_addr:"Samarkand region, Akbuyra village"
+      }
+    };
+
+    var currentLang = 'ru';
+
+    function setLang(lang) {
+      var d = I18N[lang] || I18N.ru;
+      currentLang = I18N[lang] ? lang : 'ru';
+      document.documentElement.lang = currentLang;
+
+      var nodes = document.querySelectorAll('[data-i18n]');
+      for (var i = 0; i < nodes.length; i++) {
+        var k = nodes[i].getAttribute('data-i18n');
+        if (d[k] != null) nodes[i].textContent = d[k];
+      }
+      var btns = document.querySelectorAll('.lang-btn');
+      for (var j = 0; j < btns.length; j++) {
+        btns[j].classList.toggle('active', btns[j].getAttribute('data-lang') === currentLang);
+      }
+    }
+
+    var langBtns = document.querySelectorAll('.lang-btn');
+    for (var b = 0; b < langBtns.length; b++) {
+      langBtns[b].addEventListener('click', function () {
+        setLang(this.getAttribute('data-lang'));
+      });
+    }
+  })();
+  </script>
+</body>
+</html>
