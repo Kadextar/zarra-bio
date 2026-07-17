@@ -31,13 +31,15 @@
   <meta name="twitter:description" content="Горный курорт в Самарканде. Бронирование, AI-ассистент, маршрут и ресторан Safo. Открыто 24/7." />
   <meta name="twitter:image" content="https://zarra-bio.netlify.app/assets/og-zarra.jpg" />
 
-  <meta name="theme-color" content="#050F0C" />
+  <meta name="theme-color" content="#020605" />
 
   <style>
     :root{
-      /* ===== Тёмная тема с золотом (зеркало кремовой темы Safo) ===== */
-      --bg:#050F0C;                    /* почти чёрный с изумрудным подтоном */
-      --bg-deep:#07211A;
+      /* ===== Тёмная тема с золотом (зеркало кремовой темы Safo) =====
+         Фон почти чёрный — по референсу Дианы. Изумрудный подтон оставлен
+         еле заметным следом в глубине градиента, чтобы не уходить в графит. */
+      --bg:#020605;
+      --bg-deep:#051310;
       --gold:#C9A961;                  /* фирменное золото, общее с Safo */
       --gold-bright:#E3C888;
       --gold-line:rgba(201,169,97,.55);
@@ -46,8 +48,10 @@
       --ink-dim:rgba(247,244,238,.55);
       /* Плашки: тёмная полупрозрачная подложка вместо backdrop-filter.
          Золотые линии сквозь неё просвечивают, но блюр не считается на
-         каждом кадре скролла — именно он «съедал» плавность. */
-      --card:rgba(9,29,23,.58);
+         каждом кадре скролла — именно он «съедал» плавность.
+         Оттенок почти нейтральный: на чёрном фоне заметная зелень читалась
+         бы коробками, а плашку должна очерчивать золотая окантовка. */
+      --card:rgba(12,18,16,.62);
       --card-press:rgba(201,169,97,.14);
       --serif:Georgia, "Times New Roman", "Iowan Old Style", serif;
       --sans:-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, system-ui, sans-serif;
@@ -78,7 +82,7 @@
       height:100%;
       display:block;
       pointer-events:none;
-      background-image:linear-gradient(168deg, #050F0C 0%, #061A15 55%, #07211A 100%);
+      background-image:linear-gradient(168deg, #000000 0%, #020806 60%, #051310 100%);
       /* свой GPU-слой + изоляция отрисовки: иначе мобильный Chrome
          перерисовывает фон вместе со скроллом (тот же приём, что в Safo) */
       transform:translateZ(0);
@@ -112,7 +116,7 @@
       display:flex;
       gap:2px;
       padding:3px;
-      background:rgba(5,15,12,.5);
+      background:rgba(2,6,5,.55);
       border:1px solid var(--gold-dim);
       border-radius:100px;
       backdrop-filter:blur(8px);
@@ -154,7 +158,7 @@
     .hero::before{
       content:"";
       position:absolute;inset:0;
-      background:linear-gradient(to bottom, rgba(5,15,12,.55), rgba(5,15,12,0) 45%);
+      background:linear-gradient(to bottom, rgba(2,6,5,.6), rgba(2,6,5,0) 45%);
       pointer-events:none;
       z-index:1;
     }
@@ -163,7 +167,7 @@
       position:absolute;
       left:0;right:0;bottom:-1px;
       height:140px;
-      background:linear-gradient(to bottom, rgba(5,15,12,0) 0%, rgba(5,15,12,.75) 55%, var(--bg) 100%);
+      background:linear-gradient(to bottom, rgba(2,6,5,0) 0%, rgba(2,6,5,.75) 55%, var(--bg) 100%);
       pointer-events:none;
       z-index:1;
     }
@@ -182,7 +186,7 @@
       max-width:210px;
       height:auto;
       display:block;
-      filter:drop-shadow(0 6px 18px rgba(5,15,12,.55));
+      filter:drop-shadow(0 6px 18px rgba(0,0,0,.6));
     }
 
     /* ---------- Заголовки / статус ---------- */
@@ -329,7 +333,7 @@
       padding:20px 18px 18px;
       border:1px solid rgba(201,169,97,.7);
       border-radius:18px;
-      background:rgba(12,36,29,.62);
+      background:rgba(18,26,22,.66);
       text-align:center;
       box-shadow:0 0 26px rgba(201,169,97,.12);
     }
@@ -712,23 +716,26 @@
 
     if (ctx) {
       var W = 0, H = 0;
-      var TILT = -0.17;           // общий наклон «светового потока», рад
+      var TILT = 0.045;           // едва заметный завал потока, рад
       var GOLD = '201,169,97';
+      var SPARK = '255,216,146';  // блик — теплее и светлее золота
 
-      /* Каждая линия — сумма двух синусоид: несущая волна + мелкая рябь.
-         base   — доля высоты экрана
-         a/f/s  — амплитуда / частота / скорость каждой синусоиды
-         drift  — медленный вертикальный дрейф всей кривой
-         o/sh   — базовая прозрачность и размах мерцания (итог держим в 0.15–0.5)
-         w      — толщина ядра линии, px */
+      /* Линии идут ВЕРТИКАЛЬНО (референс Дианы): каждая — сумма двух синусоид
+         по y, несущая волна + мелкая рябь.
+         base    — доля ШИРИНЫ экрана, вокруг которой гуляет линия
+         a/f/s   — амплитуда / частота / скорость каждой синусоиды
+         drift   — медленный горизонтальный дрейф всей кривой
+         o/sh/oS — базовая прозрачность, размах и скорость мерцания (0.15–0.5)
+         w       — толщина ядра, px
+         pS/pPh  — скорость и фаза бегущего блика; pS:0 — линия без блика
+                   (в референсе ярких линий меньшинство, остальные приглушены) */
       var LINES = [
-        { base:.10, a1:46, f1:.0060, s1:.13, a2:16, f2:.0170, s2:.21, drift:26, dS:.07, ph:0.4, w:1.5, o:.34, sh:.13, oS:.21 },
-        { base:.24, a1:58, f1:.0044, s1:.10, a2:12, f2:.0210, s2:.17, drift:32, dS:.05, ph:1.9, w:1.1, o:.24, sh:.09, oS:.16 },
-        { base:.37, a1:38, f1:.0072, s1:.16, a2:19, f2:.0135, s2:.24, drift:22, dS:.09, ph:3.1, w:1.8, o:.40, sh:.10, oS:.13 },
-        { base:.50, a1:64, f1:.0038, s1:.08, a2:14, f2:.0195, s2:.19, drift:36, dS:.04, ph:0.9, w:1.2, o:.27, sh:.12, oS:.24 },
-        { base:.63, a1:42, f1:.0066, s1:.14, a2:21, f2:.0150, s2:.22, drift:28, dS:.08, ph:4.7, w:1.6, o:.36, sh:.11, oS:.18 },
-        { base:.77, a1:54, f1:.0050, s1:.11, a2:11, f2:.0225, s2:.15, drift:30, dS:.06, ph:2.4, w:1.0, o:.22, sh:.07, oS:.20 },
-        { base:.90, a1:48, f1:.0058, s1:.12, a2:17, f2:.0165, s2:.20, drift:24, dS:.07, ph:5.6, w:1.4, o:.31, sh:.12, oS:.15 }
+        { base:.06, a1:34, f1:.0042, s1:.11, a2:12, f2:.0125, s2:.19, drift:18, dS:.06, ph:0.4, w:1.0, o:.30, sh:.10, oS:.19, pS:.13, pPh:0.10 },
+        { base:.22, a1:46, f1:.0031, s1:.08, a2:9,  f2:.0155, s2:.15, drift:24, dS:.04, ph:1.9, w:1.2, o:.17, sh:.02, oS:.14, pS:0,   pPh:0    },
+        { base:.36, a1:28, f1:.0053, s1:.14, a2:14, f2:.0102, s2:.22, drift:15, dS:.08, ph:3.1, w:1.5, o:.37, sh:.09, oS:.12, pS:.09, pPh:0.62 },
+        { base:.55, a1:52, f1:.0027, s1:.07, a2:11, f2:.0143, s2:.17, drift:27, dS:.03, ph:0.9, w:1.1, o:.16, sh:.02, oS:.21, pS:0,   pPh:0    },
+        { base:.74, a1:36, f1:.0047, s1:.12, a2:15, f2:.0112, s2:.20, drift:20, dS:.07, ph:4.7, w:1.4, o:.33, sh:.10, oS:.16, pS:.11, pPh:0.35 },
+        { base:.93, a1:40, f1:.0039, s1:.10, a2:10, f2:.0135, s2:.16, drift:21, dS:.06, ph:2.9, w:1.2, o:.28, sh:.09, oS:.20, pS:.08, pPh:0.48 }
       ];
 
       function resize() {
@@ -739,6 +746,44 @@
         canvas.width = Math.round(W * dpr);
         canvas.height = Math.round(H * dpr);
         ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      }
+
+      /* Бегущий блик — та самая яркая точка на линии из референса Дианы.
+         Короткий отрезок той же кривой, залитый градиентом
+         «прозрачный → яркий → прозрачный»: края мягкие, а shadowBlur,
+         который дорог на каждом кадре, не нужен. */
+      function drawSpark(L, t, pts, steps) {
+        var p = (t * L.pS + L.pPh) % 1.5 - 0.25;   // проходит сверху вниз и уходит
+        if (p < 0 || p > 1) return;
+
+        var half = 0.055;
+        var i0 = Math.round(Math.max(0, p - half) * steps);
+        var i1 = Math.round(Math.min(1, p + half) * steps);
+        if (i1 - i0 < 2) return;
+
+        // плавно гаснет у краёв, чтобы не выключаться рывком
+        var fade = 1;
+        if (p < 0.1) fade = p / 0.1;
+        else if (p > 0.9) fade = (1 - p) / 0.1;
+        if (fade <= 0) return;
+
+        var ax = pts[i0 * 2], ay = pts[i0 * 2 + 1];
+        var bx = pts[i1 * 2], by = pts[i1 * 2 + 1];
+
+        ctx.beginPath();
+        ctx.moveTo(ax, ay);
+        for (var k = i0 + 1; k <= i1; k++) ctx.lineTo(pts[k * 2], pts[k * 2 + 1]);
+
+        function grad(a) {
+          var g = ctx.createLinearGradient(ax, ay, bx, by);
+          g.addColorStop(0, 'rgba(' + SPARK + ',0)');
+          g.addColorStop(0.5, 'rgba(' + SPARK + ',' + (a * fade).toFixed(3) + ')');
+          g.addColorStop(1, 'rgba(' + SPARK + ',0)');
+          return g;
+        }
+        ctx.strokeStyle = grad(0.10); ctx.lineWidth = L.w * 9;   ctx.stroke();
+        ctx.strokeStyle = grad(0.30); ctx.lineWidth = L.w * 3;   ctx.stroke();
+        ctx.strokeStyle = grad(0.95); ctx.lineWidth = L.w * 1.1; ctx.stroke();
       }
 
       function draw(t) {
@@ -752,24 +797,29 @@
         ctx.globalCompositeOperation = 'lighter';
         ctx.lineCap = 'round';
 
-        // с запасом за края, чтобы наклон не обнажал углы
-        var x0 = -W * 0.35;
-        var span = W * 1.7;
-        var steps = Math.max(24, Math.min(64, Math.round(W / 12)));
+        // с запасом за края, чтобы наклон и дрейф не обнажали углы
+        var y0 = -H * 0.25;
+        var span = H * 1.5;
+        var steps = Math.max(28, Math.min(72, Math.round(H / 14)));
 
         for (var i = 0; i < LINES.length; i++) {
           var L = LINES[i];
-          var yShift = Math.sin(t * L.dS + L.ph) * L.drift;
+          var xShift = Math.sin(t * L.dS + L.ph) * L.drift;
+
+          // точки считаем один раз — они нужны и линии, и блику
+          var pts = [];
+          for (var j = 0; j <= steps; j++) {
+            var y = y0 + span * (j / steps);
+            var x = L.base * W
+                  + Math.sin(y * L.f1 + t * L.s1 + L.ph) * L.a1
+                  + Math.sin(y * L.f2 - t * L.s2 + L.ph * 1.7) * L.a2
+                  + xShift;
+            pts.push(x, y);
+          }
 
           ctx.beginPath();
-          for (var j = 0; j <= steps; j++) {
-            var x = x0 + span * (j / steps);
-            var y = L.base * H
-                  + Math.sin(x * L.f1 + t * L.s1 + L.ph) * L.a1
-                  + Math.sin(x * L.f2 - t * L.s2 + L.ph * 1.7) * L.a2
-                  + yShift;
-            if (j) ctx.lineTo(x, y); else ctx.moveTo(x, y);
-          }
+          ctx.moveTo(pts[0], pts[1]);
+          for (var k = 2; k < pts.length; k += 2) ctx.lineTo(pts[k], pts[k + 1]);
 
           var al = L.o + Math.sin(t * L.oS + L.ph) * L.sh;
           if (al < .15) al = .15; else if (al > .5) al = .5;
@@ -787,6 +837,8 @@
           ctx.strokeStyle = 'rgba(' + GOLD + ',' + al.toFixed(3) + ')';
           ctx.lineWidth = L.w;
           ctx.stroke();
+
+          if (L.pS) drawSpark(L, t, pts, steps);
         }
 
         ctx.restore();
